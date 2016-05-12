@@ -7,7 +7,14 @@ exports.register = (server, options, next) => {
     method: 'GET',
     path: '/notes',
     handler: handlers.getAll
-  })
+  });
+
+  server.route({
+    method: 'GET',
+    path: '/notes/{id}',
+    handler: handlers.getById
+  });
+
   next();
 };
 
