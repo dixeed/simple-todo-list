@@ -56,7 +56,7 @@ exports.update = (request, reply) => {
 
       return note.update(payload);
     })
-    .then(updatedNote => reply().code(204))
+    .then(() => reply().code(204))
     .catch(err => {
       reply(Boom.wrap(err, 500, `Error occurred when updating note ${noteId}`));
     });
