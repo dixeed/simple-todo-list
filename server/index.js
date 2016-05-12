@@ -22,21 +22,19 @@ server.register([
       models: 'lib/**/models.js',
       logging: false
     }
-  }
+  },
+  require('./extension/database'),
+  require('./lib/note')
 ])
-.then(function() {
+.then(() => {
   console.log('Plugins loaded');
 
   let db = server.plugins['hapi-sequelize'].db;
   return db.sequelize.sync({force: false});
 })
-.then(function() {
-  return server.start();
-})
-.then(function() {
-  console.log('Server listens on 8080');
-})
-.catch(function(err) {
+.then(() => server.start())
+.then(() => console.log('Server listens on 8080'))
+.catch((err) => {
   console.log('Server encountered an error:', err);
   process.exit(1);
 });
