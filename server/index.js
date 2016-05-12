@@ -19,7 +19,7 @@ server.register([
       host: 'localhost',
       port: 5433,
 
-      models: 'lib/**/models.js',
+      models: 'lib/**/model.js',
       logging: false
     }
   },
