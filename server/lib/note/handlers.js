@@ -9,7 +9,7 @@ exports.getAll = (request, reply) => {
     .findAll()
     .then(notes => reply(notes))
     .catch(err => {
-      return reply(Boom.wrap(err, 'An error occurred during Notes retrieve'));
+      reply(Boom.wrap(err, 500, 'Error occurred during Notes retrieve'));
     });
 };
 
@@ -26,6 +26,18 @@ exports.getById = (request, reply) => {
       reply(note);
     })
     .catch(err => {
-      reply(Boom.wrap(err, `An error occurred : cannot get note ${noteId}`));
+      reply(Boom.wrap(err, 500, `Error occurred : cannot get note ${noteId}`));
+    });
+};
+
+exports.create = (request, reply) => {
+  const NoteModel = request.models.Note;
+  const payload = request.payload;
+
+  NoteModel
+    .create(payload)
+    .then(newNote => reply(newNote))
+    .catch(err => {
+      reply(Boom.wrap(err, 500, 'Error occurred when creating new Note'));
     });
 };

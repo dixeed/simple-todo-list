@@ -15,6 +15,12 @@ exports.register = (server, options, next) => {
     handler: handlers.getById
   });
 
+  server.route({
+    method: 'POST',
+    path: '/notes',
+    handler: handlers.create
+  });
+
   next();
 };
 
