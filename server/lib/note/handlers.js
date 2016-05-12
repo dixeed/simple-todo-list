@@ -41,3 +41,23 @@ exports.create = (request, reply) => {
       reply(Boom.wrap(err, 500, 'Error occurred when creating new Note'));
     });
 };
+
+exports.update = (request, reply) => {
+  const NoteModel = request.models.Note;
+  const noteId = request.params.id;
+  const payload = request.payload;
+
+  NoteModel
+    .findById(noteId)
+    .then(note => {
+      if (!note) {
+        return reply(Boom.notFound(`Note ${noteId} does not exist`));
+      }
+
+      return note.update(payload);
+    })
+    .then(updatedNote => reply().code(204))
+    .catch(err => {
+      reply(Boom.wrap(err, 500, `Error occurred when updating note ${noteId}`));
+    });
+};

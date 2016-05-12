@@ -21,6 +21,12 @@ exports.register = (server, options, next) => {
     handler: handlers.create
   });
 
+  server.route({
+    method: 'PUT',
+    path: '/notes/{id}',
+    handler: handlers.update
+  });
+
   next();
 };
 
