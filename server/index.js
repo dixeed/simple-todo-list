@@ -24,7 +24,8 @@ server.register([
     }
   },
   require('./extension/database'),
-  require('./lib/note')
+  require('./lib/note'),
+  require('./lib/note-category')
 ])
 .then(() => {
   console.log('Plugins loaded');
