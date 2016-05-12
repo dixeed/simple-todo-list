@@ -61,3 +61,22 @@ exports.update = (request, reply) => {
       reply(Boom.wrap(err, 500, `Error occurred when updating note ${noteId}`));
     });
 };
+
+exports.delete = (request, reply) => {
+  const NoteModel = request.models.Note;
+  const noteId = request.params.id;
+
+  NoteModel
+    .findById(noteId)
+    .then(note => {
+      if (!note) {
+        return reply(Boom.notFound(`Note ${noteId} does not exist`));
+      }
+
+      return note.destroy();
+    })
+    .then(() => reply().code(204))
+    .catch(err => {
+      reply(Boom.wrap(err, 500, `Error occurred when deleting note ${noteId}`));
+    });
+};

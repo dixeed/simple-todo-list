@@ -27,6 +27,12 @@ exports.register = (server, options, next) => {
     handler: handlers.update
   });
 
+  server.route({
+    method: 'DELETE',
+    path: '/notes/{id}',
+    handler: handlers.delete
+  });
+
   next();
 };
 
