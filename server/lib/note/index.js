@@ -1,7 +1,13 @@
 'use strict';
 
+const handlers = require('./handlers');
+
 exports.register = (server, options, next) => {
-  
+  server.route({
+    method: 'GET',
+    path: '/notes',
+    handler: handlers.getAll
+  })
   next();
 };
 
