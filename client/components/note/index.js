@@ -10,7 +10,8 @@ component.directive('noteComponent', function () {
         controllerAs: '$ctrl',
         scope: {},
         bindToController: {
-            currNote: '='
+            currNote: '=',
+            categories: '='
         }
     };
 });
@@ -21,6 +22,10 @@ NoteComponentCtrl.$inject = [ '$scope', '$mdDialog', '$mdToast', 'Note' ];
 
 function NoteComponentCtrl($scope, $mdDialog, $mdToast, Note) {
     var _this = this;
+
+    if (!this.currNote.notesCategory) {
+        this.currNote.notesCategory = [];
+    }
 
     this.editNote = function (evt) {
         var clonedNote = JSON.parse(JSON.stringify(this.currNote));
@@ -35,20 +40,51 @@ function NoteComponentCtrl($scope, $mdDialog, $mdToast, Note) {
             },
             clickOutsideToClose: true
         }).then(function (updatedNote) {
-            _this.currNote.title = updatedNote.title;
-            _this.currNote.content = updatedNote.content;
-            _this.currNote.due_date = updatedNote.nedue_date;
-            _this.currNote.categories = updatedNote.categories;
-            _this.currNote.color = updatedNote.color;
+            Note.update(
+                { id: updatedNote.id },
+                updatedNote,
+                function () {
+                    _this.currNote.title = updatedNote.title;
+                    _this.currNote.content = updatedNote.content;
+                    _this.currNote.dueDate = updatedNote.dueDate;
+                    _this.currNote.notesCategory = updatedNote.notesCategory;
+                    _this.currNote.color = updatedNote.color;
+                },
+                function () {
+                    var toast = $mdToast.simple()
+                        .action('OK')
+                        .highlightAction(true)
+                        .position('bottom')
+                        .textContent('Une erreur s\'est produite durant l\'enregistrement de la note.');
+
+                    $mdToast.show(toast).then(function(response) {
+                    });
+                }
+            );
         });
 
         function DialogController($scope, $mdDialog, note) {
             $scope.note = note;
             $scope.note.due_date = new Date(note.due_date);
+            $scope.categorySearchText = null;
+            $scope.selectedCategoryItem = null;
 
             $scope.colors = [
                 'md-primary', 'md-accent', 'md-warn', 'md-white'
             ];
+
+            $scope.transformChip = function (chip) {
+                if (angular.isObject(chip)) {
+                    return chip;
+                }
+
+                return { id: -1, label: chip };
+            };
+
+            $scope.querySearch = function (query) {
+                var results = query ? _this.categories.filter(createFilterFor(query)) : [];
+                return results;
+            };
 
             $scope.closeDialog = function() {
                 $mdDialog.cancel();
@@ -57,6 +93,14 @@ function NoteComponentCtrl($scope, $mdDialog, $mdToast, Note) {
             $scope.saveAndCloseDialog = function () {
                 $mdDialog.hide($scope.note);
             };
+
+            function createFilterFor(query) {
+                var lowercaseQuery = angular.lowercase(query);
+
+                return function filterFn(cat) {
+                    return (cat.label.toLowerCase().indexOf(lowercaseQuery) === 0);
+                };
+            }
         }
     };
 

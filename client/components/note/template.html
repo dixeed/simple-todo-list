@@ -10,6 +10,9 @@
             {{$ctrl.currNote.content}}
 
             <md-chips ng-model="$ctrl.currNote.notesCategory" placeholder="Ajouter une catégorie" readonly="true">
+                <md-chip-template>
+                    {{$chip.label}}
+                </md-chip-template>
             </md-chips>
         </p>
     </md-card-content>
