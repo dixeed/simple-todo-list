@@ -20,7 +20,7 @@ server.register([
       pass: 'simple-todo',
       dialect: 'postgres',
       host: 'localhost',
-      port: 5432,
+      port: 5433,
 
       models: 'lib/**/model.js',
       logging: false
@@ -34,7 +34,7 @@ server.register([
   console.log('Plugins loaded');
 
   let db = server.plugins['hapi-sequelize'].db;
-  return db.sequelize.sync({force: true});
+  return db.sequelize.sync({force: false});
 })
 .then(() => server.start())
 .then(() => console.log('Server listens on 8080'))

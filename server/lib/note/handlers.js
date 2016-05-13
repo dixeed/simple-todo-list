@@ -5,10 +5,50 @@ const util = require('util');
 
 exports.getAll = (request, reply) => {
   const NoteModel = request.models.Note;
+  const NotesToCategoriesModel = request.models.NotesToCategories;
+  const NotesCategoryModel = request.models.NotesCategory;
 
   NoteModel
     .findAll()
-    .then(notes => reply(notes))
+    .then(notes => {
+      const notesId = notes.map(note => note.id);
+      return NotesToCategoriesModel
+        .findAll({
+          where: {
+            noteId: {
+              $in: notesId
+            }
+          }
+        })
+        .then(notesToCat => {
+          const categoriesId = notesToCat.map(noteToCat => noteToCat.notesCategoryId);
+          return NotesCategoryModel
+            .findAll({
+              where: {
+                id: {
+                  $in: categoriesId
+                }
+              }
+            })
+            .then(categories => {
+              notes.forEach(note => {
+                const catLinkedToNotes = notesToCat.filter(noteToCat => {
+                  return noteToCat.noteId === note.id;
+                });
+
+                const catsLinked = categories.filter(cat => {
+                  return catLinkedToNotes.some(cltn => {
+                    return cltn.notesCategoryId === cat.id;
+                  });
+                });
+
+                note.dataValues.notesCategory = catsLinked;
+              });
+
+              reply(notes);
+            });
+        });
+    })
     .catch(err => {
       reply(Boom.wrap(err, 500, 'Error occurred during Notes retrieve'));
     });
