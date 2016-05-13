@@ -17,9 +17,9 @@ component.directive('noteComponent', function () {
 
 component.controller('noteComponentCtrl', NoteComponentCtrl);
 
-NoteComponentCtrl.$inject = [ '$mdDialog' ];
+NoteComponentCtrl.$inject = [ '$scope', '$mdDialog', '$mdToast', 'Note' ];
 
-function NoteComponentCtrl($mdDialog) {
+function NoteComponentCtrl($scope, $mdDialog, $mdToast, Note) {
     var _this = this;
 
     this.editNote = function (evt) {
@@ -69,7 +69,24 @@ function NoteComponentCtrl($mdDialog) {
             .cancel('Non');
 
         $mdDialog.show(confirm).then(function() {
-            // Delete the note
+            
+            
+            Note.remove(
+                { id: _this.currNote.id },
+                function () {
+                    $scope.$emit(NOTE_DELETED_EVT, _this.currNote);
+                },
+                function () {
+                    var toast = $mdToast.simple()
+                        .action('OK')
+                        .highlightAction(true)
+                        .position('bottom')
+                        .textContent('Une erreur s\'est produite durant la suppression.');
+
+                    $mdToast.show(toast).then(function(response) {
+                    });
+                }
+            );
         }, function() {
             // Don't do anything
         });

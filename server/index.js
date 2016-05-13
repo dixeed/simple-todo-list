@@ -5,7 +5,10 @@ const server = new Hapi.Server();
 
 server.connection({
   host: 'localhost',
-  port: 8080
+  port: 8080,
+  routes: {
+    cors: true,
+  }
 });
 
 server.register([
@@ -17,7 +20,7 @@ server.register([
       pass: 'simple-todo',
       dialect: 'postgres',
       host: 'localhost',
-      port: 5433,
+      port: 5432,
 
       models: 'lib/**/model.js',
       logging: false
