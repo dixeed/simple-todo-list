@@ -6,7 +6,6 @@
     <md-sidenav md-is-locked-open="true" class="md-whiteframe-z2">
         <md-list>
             <md-list-item ng-click="$ctrl.showAssociatedNotes()">
-                <md-icon class="md-avatar-icon" md-svg-src="{{$ctrl.allNotesIcon}}"></md-icon>
                 <p>Toutes les notes</p>
             </md-list-item>
 
@@ -15,6 +14,20 @@
             <md-list-item ng-repeat="cat in $ctrl.categories" ng-click="$ctrl.showAssociatedNotes(cat)">
                 <md-icon class="md-avatar-icon" md-svg-src="{{cat.iconUrl}}"></md-icon>
                 <p ng-bind="cat.label"></p>
+            </md-list-item>
+
+            <md-divider></md-divider>
+
+            <md-list-item>
+                <div class="md-no-style">
+                    <md-input-container>
+                        <input type="text" placeholder="Nouvelle catégorie" ng-model="$ctrl.newCategory.label">
+                    </md-input-container>
+                    
+                    <md-button class="md-icon-button" ng-click="$ctrl.addNewCategory()">
+                        <i class="material-icons">add_box</i>
+                    </md-button>
+                </div>
             </md-list-item>
         </md-list>
     </md-sidenav>

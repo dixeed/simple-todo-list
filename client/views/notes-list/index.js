@@ -12,6 +12,11 @@ function NotesListCtrl($scope, ImageHelper, Note, Category, $mdToast) {
     this.notes = [];
     this.currCategory = {};
 
+    var notificationToast = $mdToast.simple()
+                    .action('OK')
+                    .highlightAction(true)
+                    .position('bottom');
+
     Category.query(function (data) {
         angular.forEach(data, function (item) {
             item.iconUrl = ImageHelper.getMaterialIconPath('image', item.iconUrl);
@@ -34,7 +39,21 @@ function NotesListCtrl($scope, ImageHelper, Note, Category, $mdToast) {
         Note.query(filter, function (data, headersFn) {
             _this.notes = data;
         }, function (response) {
+            notificationToast.textContent('Une erreur s\'est produite durant la récupération des notes.');
+            $mdToast.show(notificationToast);
+        });
+    };
 
+    this.addNewCategory = function () {
+        var cat = new Category(this.newCategory);
+        cat.$save(function (data) {
+            notificationToast.textContent('La catégorie a été ajoutée avec succès.');
+            $mdToast.show(notificationToast);
+
+            _this.categories.push(data);
+        }, function () {
+            notificationToast.textContent('Une erreur s\'est produite durant l\'ajout de la catégorie.');
+            $mdToast.show(notificationToast);
         });
     };
 
@@ -45,20 +64,15 @@ function NotesListCtrl($scope, ImageHelper, Note, Category, $mdToast) {
             note.categories = [ this.currCategory ];
         }
 
-        var toast = $mdToast.simple()
-                    .action('OK')
-                    .highlightAction(true)
-                    .position('bottom');
-
         note.$save(function (data) {
-            toast.textContent('La note a été ajoutée avec succès.');
-            $mdToast.show(toast);
+            notificationToast.textContent('La note a été ajoutée avec succès.');
+            $mdToast.show(notificationToast);
 
             _this.notes.push(data);
         },
         function () {
-            toast.textContent('Une erreur s\'est produite durant l\'ajout de la note.');
-            $mdToast.show(toast);
+            notificationToast.textContent('Une erreur s\'est produite durant l\'ajout de la note.');
+            $mdToast.show(notificationToast);
         });
 
         this.newNote = {};
@@ -78,12 +92,7 @@ function NotesListCtrl($scope, ImageHelper, Note, Category, $mdToast) {
         
         _this.notes.splice(index, 1);
 
-        var toast = $mdToast.simple()
-                    .action('OK')
-                    .highlightAction(true)
-                    .position('bottom')
-                    .textContent('La note a été supprimée avec succès.');
-
-        $mdToast.show(toast);
+        notificationToast.textContent('La note a été supprimée avec succès.');
+        $mdToast.show(notificationToast);
     });
 }
