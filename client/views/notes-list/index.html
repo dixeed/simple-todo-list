@@ -14,6 +14,8 @@
             <md-list-item ng-repeat="cat in $ctrl.categories" ng-click="$ctrl.showAssociatedNotes(cat)">
                 <md-icon class="md-avatar-icon" md-svg-src="{{cat.iconUrl}}"></md-icon>
                 <p ng-bind="cat.label"></p>
+
+                <i class="material-icons" ng-show="$ctrl.currCategory && cat.id === $ctrl.currCategory.id">remove_red_eyes</i>
             </md-list-item>
 
             <md-divider></md-divider>

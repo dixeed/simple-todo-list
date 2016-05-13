@@ -71,7 +71,7 @@ function NotesListCtrl($scope, ImageHelper, Note, Category, $mdToast) {
         var note = new Note(this.newNote);
 
         if (this.currCategory.id) {
-            note.categories = [ this.currCategory ];
+            note.notesCategory = [ this.currCategory ];
         }
 
         note.$save(function (data) {
@@ -85,7 +85,12 @@ function NotesListCtrl($scope, ImageHelper, Note, Category, $mdToast) {
             $mdToast.show(notificationToast);
         });
 
-        this.newNote = {};
+        this.newNote = {
+            title: '',
+            content: ''
+        };
+
+        $scope.newNoteForm.$setPristine();
     };
 
     // First call to initialize the view
@@ -93,7 +98,7 @@ function NotesListCtrl($scope, ImageHelper, Note, Category, $mdToast) {
 
     $scope.$on(NOTE_DELETED_EVT, function (event, args) {
         var index = _this.notes.findIndex(function (note) {
-            return note.id === args.note.id;
+            return note.id === args.id;
         });
 
         if (index === -1) {

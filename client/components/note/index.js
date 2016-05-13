@@ -22,6 +22,10 @@ NoteComponentCtrl.$inject = [ '$scope', '$mdDialog', '$mdToast', 'Note' ];
 
 function NoteComponentCtrl($scope, $mdDialog, $mdToast, Note) {
     var _this = this;
+    var notificationToast = $mdToast.simple()
+                        .action('OK')
+                        .highlightAction(true)
+                        .position('bottom');
 
     if (!this.currNote.notesCategory) {
         this.currNote.notesCategory = [];
@@ -49,16 +53,13 @@ function NoteComponentCtrl($scope, $mdDialog, $mdToast, Note) {
                     _this.currNote.dueDate = updatedNote.dueDate;
                     _this.currNote.notesCategory = updatedNote.notesCategory;
                     _this.currNote.color = updatedNote.color;
+
+                    notificationToast.textContent('L\'enregistrement de la note s\'est déroulé avec succès.');
+                    $mdToast.show(notificationToast);
                 },
                 function () {
-                    var toast = $mdToast.simple()
-                        .action('OK')
-                        .highlightAction(true)
-                        .position('bottom')
-                        .textContent('Une erreur s\'est produite durant l\'enregistrement de la note.');
-
-                    $mdToast.show(toast).then(function(response) {
-                    });
+                    notificationToast.textContent('Une erreur s\'est produite durant l\'enregistrement de la note.');
+                    $mdToast.show(notificationToast);
                 }
             );
         });
@@ -113,21 +114,14 @@ function NoteComponentCtrl($scope, $mdDialog, $mdToast, Note) {
             .cancel('Non');
 
         $mdDialog.show(confirm).then(function() {
-            
-            
             Note.remove(
                 { id: _this.currNote.id },
                 function () {
                     $scope.$emit(NOTE_DELETED_EVT, _this.currNote);
                 },
                 function () {
-                    var toast = $mdToast.simple()
-                        .action('OK')
-                        .highlightAction(true)
-                        .position('bottom')
-                        .textContent('Une erreur s\'est produite durant la suppression.');
-
-                    $mdToast.show(toast).then(function(response) {
+                    notificationToast.textContent('Une erreur s\'est produite durant la suppression.');
+                    $mdToast.show(notificationToast).then(function(response) {
                     });
                 }
             );
