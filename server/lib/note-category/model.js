@@ -13,6 +13,14 @@ module.exports = function(sequelize, DataTypes) {
         type: DataTypes.STRING(250),
         allowNull: false
       }
+    },
+    {
+      tableName: 'NotesCategory',
+      classMethods: {
+        associate: (db) => {
+          NotesCategory.belongsToMany(db.Note, { through: 'NotesToCategories', foreignKey: 'notesCategoryId' });
+        }
+      }
     }
   );
 

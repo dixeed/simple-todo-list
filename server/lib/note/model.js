@@ -17,6 +17,14 @@ module.exports = function(sequelize, DataTypes) {
         type: DataTypes.DATE,
         allowNull: true
       }
+    },
+    {
+      tableName: 'Note',
+      classMethods: {
+        associate: (db) => {
+          Note.belongsToMany(db.NotesCategory, { through: 'NotesToCategories', foreignKey: 'noteId' });
+        }
+      }
     }
   );
 

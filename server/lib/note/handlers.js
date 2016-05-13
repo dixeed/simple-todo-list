@@ -1,6 +1,7 @@
 'use strict';
 
 const Boom = require('boom');
+const util = require('util');
 
 exports.getAll = (request, reply) => {
   const NoteModel = request.models.Note;
@@ -32,12 +33,41 @@ exports.getById = (request, reply) => {
 
 exports.create = (request, reply) => {
   const NoteModel = request.models.Note;
+  const NotesToCategoriesModel = request.models.NotesToCategories;
+  const NotesCategoryModel = request.models.NotesCategory;
   const payload = request.payload;
 
   NoteModel
     .create(payload)
-    .then(newNote => reply(newNote))
+    .then(newNote => {
+      if (payload.notesCategory) {
+        const notesToCategoriesItems = payload.notesCategory.map(cat => {
+          return { notesCategoryId: cat.id, noteId: newNote.id };
+        });
+
+        return NotesToCategoriesModel
+          .bulkCreate(notesToCategoriesItems)
+          .then(() => {
+            const categoriesId = notesToCategoriesItems.map(cat => cat.notesCategoryId);
+            return NotesCategoryModel
+              .findAll({
+                where: {
+                  id: {
+                    $in: categoriesId
+                  }
+                }
+              })
+              .then(categories => {
+                newNote.dataValues.notesCategory = categories;
+                reply(newNote);
+              });
+          });
+      }
+
+      return reply(newNote);
+    })
     .catch(err => {
+      console.log(err);
       reply(Boom.wrap(err, 500, 'Error occurred when creating new Note'));
     });
 };
@@ -78,5 +108,39 @@ exports.delete = (request, reply) => {
     .then(() => reply().code(204))
     .catch(err => {
       reply(Boom.wrap(err, 500, `Error occurred when deleting note ${noteId}`));
+    });
+};
+
+exports.getByCategory = (request, reply) => {
+  const NoteModel = request.models.Note;
+  const NotesToCategoriesModel = request.models.NotesToCategories;
+  const catId = request.params.catId;
+
+  NotesToCategoriesModel
+    .findAll({
+      where: {
+        notesCategoryId: catId
+      }
+    })
+    .then(notesToCat => {
+      const notesId = notesToCat.map(noteToCat => noteToCat.noteId);
+
+      return NoteModel
+        .findAll({
+          where: {
+            id: {
+              $in: notesId
+            }
+          }
+        });
+    })
+    .then(notes => {
+      if (!notes || notes.length === 0) {
+        return reply(Boom.notFound(`No notes for category ${catId}`));
+      }
+      reply(notes);
+    })
+    .catch(err => {
+      reply(Boom.wrap(err, 500, `Error occurred when retrieving all notes for category ${catId}`));
     });
 };
