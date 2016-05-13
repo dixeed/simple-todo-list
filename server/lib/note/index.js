@@ -33,6 +33,12 @@ exports.register = (server, options, next) => {
     handler: handlers.delete
   });
 
+  server.route({
+    method: 'GET',
+    path: '/notes/category/{catId}',
+    handler: handlers.getByCategory
+  });
+
   next();
 };
 
