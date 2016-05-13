@@ -140,19 +140,7 @@ exports.update = (request, reply) => {
   const NoteModel = request.models.Note;
   const NoteToCategoriesModel = request.models.NoteToCategories;
   const noteId = request.params.id;
-  // const payload = request.payload;
-  const payload = {
-    id: 1,
-    title: 'BITE',
-    notesCategory: [
-      {
-        id: 1
-      },
-      {
-        id: 2
-      }
-    ]
-  };
+  const payload = request.payload;
 
   NoteModel
     .findById(noteId)
