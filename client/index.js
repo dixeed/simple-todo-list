@@ -2,9 +2,12 @@
 
 // Declare app level module which depends on views, and components.
 var app = angular.module('todoList', [
+    'ngMaterial',
     'ngRoute',
     'ngAnimate',
-    'ui.router'
+    'ngResource',
+    'ui.router',
+    'todolist.note'
 ]);
 
 app.run(Startup)
@@ -28,6 +31,16 @@ function Router($stateProvider, $urlRouterProvider) {
         .state('home', {
             url: '/',
             templateUrl: 'views/home/index.html'
+        })
+        .state('list', {
+            url: '/list',
+            templateUrl: 'views/notes-list/index.html',
+            controller: 'notesListCtrl',
+            controllerAs: '$ctrl',
+            scope: {},
+            bindToController: {
+
+            }
         })
         .state('notFound', {
             url: '/not-found',

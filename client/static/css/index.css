@@ -1,0 +1,35 @@
+.md-white, button.md-white, .md-toolbar-tools.md-white {
+    background-color: rgb(250,250,250) !important;
+}
+
+.md-toolbar-tools.md-white {
+    color: black;
+}
+
+md-card.md-primary, .md-toolbar-tools.md-primary {
+    background-color: rgb(16,108,200);
+    color: white;
+}
+
+md-card.md-accent, .md-toolbar-tools.md-accent {
+    background-color: rgb(255,82,82);
+}
+
+md-card.md-warn, .md-toolbar-tools.md-warn {
+    background-color: rgb(255,87,34);
+}
+
+md-card.md-primary .md-primary, md-card.md-accent .md-primary, md-card.md-warn .md-primary {
+    color: white;
+}
+
+.site-content-toolbar {
+    background: #f6f6f6 !important;
+    color: #202020 !important;
+    z-index: 65;
+}
+
+#listTitle > h1 {
+    text-align: center;
+    margin: .5em 0;
+}

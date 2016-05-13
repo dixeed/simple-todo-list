@@ -1,0 +1,28 @@
+<md-card ng-class="$ctrl.currNote.color">
+    <md-card-title>
+        <md-card-title-text>
+            <span class="md-headline">{{$ctrl.currNote.title}}</span>
+        </md-card-title-text>
+    </md-card-title>
+
+    <md-card-content>
+        <p>
+            {{$ctrl.currNote.content}}
+
+            <md-chips ng-model="$ctrl.currNote.categories" placeholder="Ajouter une catégorie" readonly="true">
+            </md-chips>
+        </p>
+    </md-card-content>
+
+    <md-card-actions>
+        <md-card-icon-actions>
+            <md-button class="md-icon-button md-primary" aria-label="Edit" ng-click="$ctrl.editNote($event)">
+                <i class="material-icons">edit</i>
+            </md-button>
+
+            <md-button class="md-icon-button" aria-label="Delete" ng-click="$ctrl.removeNote($event)">
+                <i class="material-icons">delete</i>
+            </md-button>
+        </md-card-icon-actions>
+    </md-card-actions>
+</md-card>
