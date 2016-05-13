@@ -198,12 +198,7 @@ exports.getByCategory = (request, reply) => {
           }
         });
     })
-    .then(notes => {
-      if (!notes || notes.length === 0) {
-        return reply(Boom.notFound(`No notes for category ${catId}`));
-      }
-      reply(notes);
-    })
+    .then(notes => reply(notes))
     .catch(err => {
       reply(Boom.wrap(err, 500, `Error occurred when retrieving all notes for category ${catId}`));
     });
