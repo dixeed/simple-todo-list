@@ -1,0 +1,29 @@
+<md-toolbar layout="row" id="listTitle" class="md-whiteframe-z1 site-content-toolbar">
+    <h1 flex>Simple Note App</h1>
+</md-toolbar>
+
+<div flex layout="row">
+    <md-sidenav md-is-locked-open="true" class="md-whiteframe-z2">
+        <md-list>
+            <md-list-item ng-click="$ctrl.showAssociatedNotes()">
+                <md-icon class="md-avatar-icon" md-svg-src="{{$ctrl.allNotesIcon}}"></md-icon>
+                <p>Toutes les notes</p>
+            </md-list-item>
+
+            <md-divider></md-divider>
+
+            <md-list-item ng-repeat="cat in $ctrl.categories" ng-click="$ctrl.showAssociatedNotes(cat)">
+                <md-icon class="md-avatar-icon" md-svg-src="{{cat.icon}}"></md-icon>
+                <p ng-bind="cat.label"></p>
+            </md-list-item>
+        </md-list>
+    </md-sidenav>
+
+    <md-content layout-padding flex id="content">
+        <md-grid-list md-cols="4" md-gutter="1em" md-row-height="1:1">
+            <md-grid-tile ng-repeat="note in $ctrl.notes">
+                <note-component curr-note="note" style="width: 100%;"></note-component>
+            </md-grid-tile>
+        </md-grid-list>
+    </md-content>
+</div>

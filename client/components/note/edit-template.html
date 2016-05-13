@@ -1,0 +1,45 @@
+<md-dialog aria-label="Modifier">
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools" ng-class="note.color">
+                <h2>Modifier</h2>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content">
+                <div layout-gt-xs="row">
+                    <md-input-container class="md-block" flex-gt-xs>
+                        <label>Titre</label>
+                        <input type="text" ng-model="note.title">
+                    </md-input-container>
+
+                    <md-datepicker ng-model="note.due_date" md-placeholder="Enter date">
+                    </md-datepicker>
+                </div>
+            
+                <div layout-gt-xs="row">
+                    <md-input-container class="md-block" flex-gt-xs>
+                        <label>Contenu</label>
+                        <textarea name="content" ng-model="note.content" required md-maxlength="350"></textarea>
+                    </md-input-container>
+                </div>
+
+                <div layout-gt-xs="row">
+                    <md-chips ng-model="note.categories" placeholder="Ajouter une catégorie" flex-gt-xs>
+                    </md-chips>
+                </div>
+
+                <md-button ng-repeat="color in colors" class="md-fab md-mini" aria-label="Change color" ng-class="color" ng-click="note.color = color"></md-button>
+            </div>
+        </md-dialog-content>
+
+        <md-dialog-actions>
+            <md-button ng-click="closeDialog()" class="md-warn">
+                Annuler
+            </md-button>
+            <md-button ng-click="saveAndCloseDialog()" class="md-primary">
+                Enregistrer
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>
