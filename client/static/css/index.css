@@ -33,3 +33,18 @@ md-card.md-primary .md-primary, md-card.md-accent .md-primary, md-card.md-warn .
     text-align: center;
     margin: .5em 0;
 }
+
+#newNoteForm {
+    margin-right: auto;
+    margin-left: auto;
+
+    width: 50%;
+}
+
+#newNoteForm .md-errors-spacer {
+    display: none;
+}
+
+#newNoteForm md-input-container {
+    margin: .4em 0;
+}
