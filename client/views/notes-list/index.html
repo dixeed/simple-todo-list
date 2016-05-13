@@ -37,7 +37,7 @@
             <div layout-gt-xs="row">
                 <md-input-container class="md-block" flex-gt-xs>
                     <label>Titre</label>
-                    <input ng-model="$ctrl.newNote.title">
+                    <input ng-model="$ctrl.newNote.title" required>
                 </md-input-container>
                 <md-datepicker ng-model="$ctrl.newNote.dueDate" md-placeholder="Dû le">
                 </md-datepicker>
@@ -52,9 +52,13 @@
             <md-button class="md-raised md-primary" type="submit">Ajouter</md-button>
         </form>
 
+        <p ng-show="$ctrl.notes.length === 0" style="text-align: center;">
+            Aucune note pour cette catégorie.
+        </p>
+
         <md-grid-list md-cols="4" md-gutter="1em" md-row-height="1:1">
             <md-grid-tile ng-repeat="note in $ctrl.notes">
-                <note-component curr-note="note" style="width: 100%;"></note-component>
+                <note-component curr-note="note" categories="$ctrl.categories" style="width: 100%;"></note-component>
             </md-grid-tile>
         </md-grid-list>
     </md-content>

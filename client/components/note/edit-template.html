@@ -25,7 +25,14 @@
                 </div>
 
                 <div layout-gt-xs="row">
-                    <md-chips ng-model="note.notesCategory" placeholder="Ajouter une catégorie" flex-gt-xs>
+                    <md-chips ng-model="note.notesCategory" md-autocomplete-snap md-require-match="true" md-transform-chip="transformChip($chip)" flex-gt-xs>
+                        <md-chip-template>
+                            {{$chip.label}}
+                        </md-chip-template>
+
+                        <md-autocomplete md-selected-item="selectedCategoryItem" md-search-text="categorySearchText" md-items="item in querySearch(categorySearchText)" md-item-text="item.label" placeholder="Chercher une catégorie">
+                            <span md-highlight-text="categorySearchText">{{item.label}}</span>
+                        </md-autocomplete>
                     </md-chips>
                 </div>
 

@@ -19,6 +19,10 @@ function NotesListCtrl($scope, ImageHelper, Note, Category, $mdToast) {
 
     Category.query(function (data) {
         angular.forEach(data, function (item) {
+            if (!item.iconUrl || item.iconUrl === '') {
+                item.iconUrl = 'ic_image_24px';
+            }
+
             item.iconUrl = ImageHelper.getMaterialIconPath('image', item.iconUrl);
         });
 
@@ -46,14 +50,20 @@ function NotesListCtrl($scope, ImageHelper, Note, Category, $mdToast) {
 
     this.addNewCategory = function () {
         var cat = new Category(this.newCategory);
+
         cat.$save(function (data) {
             notificationToast.textContent('La catégorie a été ajoutée avec succès.');
             $mdToast.show(notificationToast);
+            data.iconUrl = ImageHelper.getMaterialIconPath('image', 'ic_image_24px');
 
             _this.categories.push(data);
+
+            _this.newCategory = {};
         }, function () {
             notificationToast.textContent('Une erreur s\'est produite durant l\'ajout de la catégorie.');
             $mdToast.show(notificationToast);
+
+            _this.newCategory = {};
         });
     };
 
