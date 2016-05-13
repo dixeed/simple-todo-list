@@ -16,6 +16,10 @@ module.exports = function(sequelize, DataTypes) {
       dueDate: {
         type: DataTypes.DATE,
         allowNull: true
+      },
+      color: {
+        type: DataTypes.STRING(50),
+        allowNull: true
       }
     },
     {
