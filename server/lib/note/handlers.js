@@ -56,6 +56,8 @@ exports.getAll = (request, reply) => {
 
 exports.getById = (request, reply) => {
   const NoteModel = request.models.Note;
+  const NotesToCategoriesModel = request.models.NotesToCategories;
+  const NotesCategoryModel = request.models.NotesCategory;
   const noteId = request.params.id;
 
   NoteModel
@@ -64,9 +66,31 @@ exports.getById = (request, reply) => {
       if (!note) {
         return reply(Boom.notFound(`Note ${noteId} does not exist`));
       }
-      reply(note);
+
+      return NotesToCategoriesModel
+        .findAll({
+          where: {
+            noteId: noteId
+          }
+        })
+        .then(notesToCat => {
+          const categoriesId = notesToCat.map(noteToCat => noteToCat.notesCategoryId);
+          return NotesCategoryModel
+            .findAll({
+              where: {
+                id: {
+                  $in: categoriesId
+                }
+              }
+            })
+            .then(categories => {
+              note.dataValues.notesCategory = categories;
+              reply(note);
+            });
+        });
     })
     .catch(err => {
+      console.log(err);
       reply(Boom.wrap(err, 500, `Error occurred : cannot get note ${noteId}`));
     });
 };
