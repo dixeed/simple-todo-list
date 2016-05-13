@@ -31,7 +31,7 @@ server.register([
   console.log('Plugins loaded');
 
   let db = server.plugins['hapi-sequelize'].db;
-  return db.sequelize.sync({force: false});
+  return db.sequelize.sync({force: true});
 })
 .then(() => server.start())
 .then(() => console.log('Server listens on 8080'))
