@@ -5,10 +5,50 @@ const util = require('util');
 
 exports.getAll = (request, reply) => {
   const NoteModel = request.models.Note;
+  const NotesToCategoriesModel = request.models.NotesToCategories;
+  const NotesCategoryModel = request.models.NotesCategory;
 
   NoteModel
     .findAll()
-    .then(notes => reply(notes))
+    .then(notes => {
+      const notesId = notes.map(note => note.id);
+      return NotesToCategoriesModel
+        .findAll({
+          where: {
+            noteId: {
+              $in: notesId
+            }
+          }
+        })
+        .then(notesToCat => {
+          const categoriesId = notesToCat.map(noteToCat => noteToCat.notesCategoryId);
+          return NotesCategoryModel
+            .findAll({
+              where: {
+                id: {
+                  $in: categoriesId
+                }
+              }
+            })
+            .then(categories => {
+              notes.forEach(note => {
+                const catLinkedToNotes = notesToCat.filter(noteToCat => {
+                  return noteToCat.noteId === note.id;
+                });
+
+                const catsLinked = categories.filter(cat => {
+                  return catLinkedToNotes.some(cltn => {
+                    return cltn.notesCategoryId === cat.id;
+                  });
+                });
+
+                note.dataValues.notesCategory = catsLinked;
+              });
+
+              reply(notes);
+            });
+        });
+    })
     .catch(err => {
       reply(Boom.wrap(err, 500, 'Error occurred during Notes retrieve'));
     });
@@ -16,6 +56,8 @@ exports.getAll = (request, reply) => {
 
 exports.getById = (request, reply) => {
   const NoteModel = request.models.Note;
+  const NotesToCategoriesModel = request.models.NotesToCategories;
+  const NotesCategoryModel = request.models.NotesCategory;
   const noteId = request.params.id;
 
   NoteModel
@@ -24,9 +66,31 @@ exports.getById = (request, reply) => {
       if (!note) {
         return reply(Boom.notFound(`Note ${noteId} does not exist`));
       }
-      reply(note);
+
+      return NotesToCategoriesModel
+        .findAll({
+          where: {
+            noteId: noteId
+          }
+        })
+        .then(notesToCat => {
+          const categoriesId = notesToCat.map(noteToCat => noteToCat.notesCategoryId);
+          return NotesCategoryModel
+            .findAll({
+              where: {
+                id: {
+                  $in: categoriesId
+                }
+              }
+            })
+            .then(categories => {
+              note.dataValues.notesCategory = categories;
+              reply(note);
+            });
+        });
     })
     .catch(err => {
+      console.log(err);
       reply(Boom.wrap(err, 500, `Error occurred : cannot get note ${noteId}`));
     });
 };
@@ -134,12 +198,7 @@ exports.getByCategory = (request, reply) => {
           }
         });
     })
-    .then(notes => {
-      if (!notes || notes.length === 0) {
-        return reply(Boom.notFound(`No notes for category ${catId}`));
-      }
-      reply(notes);
-    })
+    .then(notes => reply(notes))
     .catch(err => {
       reply(Boom.wrap(err, 500, `Error occurred when retrieving all notes for category ${catId}`));
     });
