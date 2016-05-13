@@ -138,8 +138,21 @@ exports.create = (request, reply) => {
 
 exports.update = (request, reply) => {
   const NoteModel = request.models.Note;
+  const NoteToCategoriesModel = request.models.NoteToCategories;
   const noteId = request.params.id;
-  const payload = request.payload;
+  // const payload = request.payload;
+  const payload = {
+    id: 1,
+    title: 'BITE',
+    notesCategory: [
+      {
+        id: 1
+      },
+      {
+        id: 2
+      }
+    ]
+  };
 
   NoteModel
     .findById(noteId)
@@ -148,7 +161,24 @@ exports.update = (request, reply) => {
         return reply(Boom.notFound(`Note ${noteId} does not exist`));
       }
 
-      return note.update(payload);
+      const catId = payload.notesCategory.map(cat => cat.id);
+      return NoteToCategoriesModel
+        .update(
+          {
+            notesCategoryId: {
+              $in: catId
+            }
+          },
+          {
+            where: { noteId: note.id }
+          }
+        )
+        .spread(function(affectedCount, affectedRows) {
+          console.log(affectedCount);
+        })
+        .then(() => {
+          return note.update(payload);
+        });
     })
     .then(() => reply().code(204))
     .catch(err => {
