@@ -1,3 +1,6 @@
+# Config
+server/config/db-credentials.json
+
 # Logs
 logs
 *.log

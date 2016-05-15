@@ -2,6 +2,7 @@
 
 const Hapi = require('hapi');
 const server = new Hapi.Server();
+const config = require('./config');
 
 server.connection({
   host: 'localhost',
@@ -15,12 +16,12 @@ server.register([
   {
     register: require('hapi-sequelize'),
     options: {
-      database: 'simple-todo',
-      user: 'simple-todo',
-      pass: 'simple-todo',
-      dialect: 'postgres',
-      host: 'localhost',
-      port: 5432,
+      database: config.get('/database/name'),
+      user: config.get('/database/user'),
+      pass: config.get('/database/pass'),
+      dialect: config.get('/database/dialect'),
+      host: config.get('/database/host'),
+      port: config.get('/database/port'),
 
       models: 'lib/**/model.js',
       logging: false
