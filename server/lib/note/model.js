@@ -25,8 +25,8 @@ module.exports = function(sequelize, DataTypes) {
     {
       tableName: 'Note',
       classMethods: {
-        associate: (db) => {
-          Note.belongsToMany(db.NotesCategory, { through: 'NotesToCategories', foreignKey: 'noteId' });
+        associate: function(db) {
+          this.belongsToMany(db.NotesCategory, { through: 'NotesToCategories', foreignKey: 'noteId' });
         }
       }
     }
