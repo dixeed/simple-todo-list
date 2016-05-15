@@ -61,38 +61,25 @@ exports.getById = (request, reply) => {
   const noteId = request.params.id;
 
   NoteModel
-    .findById(noteId)
+    .findOne({
+      where: {
+        id: noteId
+      },
+      include: [{
+        model: NotesCategoryModel,
+        // used to remove the attributes of the join table otherwise
+        // they are eagerly loaded in the NotesCategory object
+        through: { attributes: [] }
+      }]
+    })
     .then(note => {
       if (!note) {
         return reply(Boom.notFound(`Note ${noteId} does not exist`));
       }
 
-      return NotesToCategoriesModel
-        .findAll({
-          where: {
-            noteId: noteId
-          }
-        })
-        .then(notesToCat => {
-          const categoriesId = notesToCat.map(noteToCat => noteToCat.notesCategoryId);
-          return NotesCategoryModel
-            .findAll({
-              where: {
-                id: {
-                  $in: categoriesId
-                }
-              }
-            })
-            .then(categories => {
-              note.dataValues.notesCategory = categories;
-              reply(note);
-            });
-        });
+      reply(note);
     })
-    .catch(err => {
-      console.log(err);
-      reply(Boom.wrap(err, 500, `Error occurred : cannot get note ${noteId}`));
-    });
+    .catch(err => reply(err));
 };
 
 exports.create = (request, reply) => {
