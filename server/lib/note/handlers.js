@@ -149,26 +149,15 @@ exports.delete = (request, reply) => {
 
 exports.getByCategory = (request, reply) => {
   const NoteModel = request.models.Note;
-  const NotesToCategoriesModel = request.models.NotesToCategories;
+  const NotesCategoryModel = request.models.NotesCategory;
   const catId = request.params.catId;
 
-  NotesToCategoriesModel
+  NoteModel
     .findAll({
-      where: {
-        notesCategoryId: catId
-      }
-    })
-    .then(notesToCat => {
-      const notesId = notesToCat.map(noteToCat => noteToCat.noteId);
-
-      return NoteModel
-        .findAll({
-          where: {
-            id: {
-              $in: notesId
-            }
-          }
-        });
+      include: [{
+        model: NotesCategoryModel,
+        where: { id: catId }
+      }]
     })
     .then(notes => reply(notes))
     .catch(err => {
