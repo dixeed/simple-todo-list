@@ -96,39 +96,58 @@ exports.create = (request, reply) => {
 
 exports.update = (request, reply) => {
   const NoteModel = request.models.Note;
-  const NoteToCategoriesModel = request.models.NoteToCategories;
+  const NotesCategoryModel = request.models.NotesCategory;
   const noteId = request.params.id;
   const payload = request.payload;
 
   NoteModel
-    .findById(noteId)
+    .findOne({
+      where: {
+        id: noteId
+      },
+      include: [{
+        model: NotesCategoryModel,
+        through: { attributes: [] }
+      }]
+    })
     .then(note => {
       if (!note) {
-        return reply(Boom.notFound(`Note ${noteId} does not exist`));
+        throw Boom.notFound(`Note ${noteId} does not exist`);
       }
 
-      const catId = payload.notesCategory.map(cat => cat.id);
-      return NoteToCategoriesModel
-        .update(
-          {
-            notesCategoryId: {
-              $in: catId
+      if (payload.NotesCategories) {
+        const catIds = payload.NotesCategories.map(cat => cat.id);
+        return NotesCategoryModel
+          .findAll({
+            where: {
+              id: {
+                $in: catIds
+              }
             }
+          })
+          .then(categories => {
+            return note.setNotesCategories(categories);
+          })
+          .then(() => note.update(payload));
+      }
+
+      return note.update(payload);
+    })
+    .then(updatedNote => {
+      return NoteModel
+        .findOne({
+          where: {
+            id: updatedNote.id
           },
-          {
-            where: { noteId: note.id }
-          }
-        )
-        .spread(function(affectedCount, affectedRows) {
-          console.log(affectedCount);
-        })
-        .then(() => {
-          return note.update(payload);
+          include: [{
+            model: NotesCategoryModel,
+            through: { attributes: [] }
+          }]
         });
     })
-    .then(() => reply().code(204))
+    .then(noteFromDb => reply(noteFromDb))
     .catch(err => {
-      reply(Boom.wrap(err, 500, `Error occurred when updating note ${noteId}`));
+      reply(Boom.wrap(err, 500, `Error occurred while updating Note ${noteId}`));
     });
 };
 
