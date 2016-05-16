@@ -1,7 +1,6 @@
 'use strict';
 
 const Boom = require('boom');
-const util = require('util');
 
 exports.getAll = (request, reply) => {
   const NoteModel = request.models.Note;
