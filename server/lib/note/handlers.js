@@ -51,41 +51,45 @@ exports.getById = (request, reply) => {
 
 exports.create = (request, reply) => {
   const NoteModel = request.models.Note;
-  const NotesToCategoriesModel = request.models.NotesToCategories;
   const NotesCategoryModel = request.models.NotesCategory;
   const payload = request.payload;
 
   NoteModel
     .create(payload)
     .then(newNote => {
-      if (payload.notesCategory) {
-        const notesToCategoriesItems = payload.notesCategory.map(cat => {
-          return { notesCategoryId: cat.id, noteId: newNote.id };
-        });
-
-        return NotesToCategoriesModel
-          .bulkCreate(notesToCategoriesItems)
+      if (payload.NotesCategories && payload.NotesCategories.length > 0) {
+        const catIds = payload.NotesCategories.map(cat => cat.id);
+        return NotesCategoryModel
+          .findAll({
+            where: {
+              id: {
+                $in: catIds
+              }
+            }
+          })
+          .then(cat => {
+            if (!cat || cat.length === 0) {
+              throw Boom.notFound('Cannot link to inexsting categories');
+            }
+            return newNote.addNotesCategories(cat);
+          })
           .then(() => {
-            const categoriesId = notesToCategoriesItems.map(cat => cat.notesCategoryId);
-            return NotesCategoryModel
-              .findAll({
-                where: {
-                  id: {
-                    $in: categoriesId
-                  }
-                }
-              })
-              .then(categories => {
-                newNote.dataValues.notesCategory = categories;
-                reply(newNote);
-              });
+            return NoteModel.find({
+              where: {
+                id: newNote.id
+              },
+              include: {
+                model: NotesCategoryModel,
+                through: { attributes: [] }
+              }
+            });
           });
       }
 
-      return reply(newNote);
+      return newNote;
     })
+    .then(newNoteWithAssociations => reply(newNoteWithAssociations))
     .catch(err => {
-      console.log(err);
       reply(Boom.wrap(err, 500, 'Error occurred when creating new Note'));
     });
 };
