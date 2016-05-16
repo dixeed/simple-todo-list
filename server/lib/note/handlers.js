@@ -156,7 +156,10 @@ exports.getByCategory = (request, reply) => {
     .findAll({
       include: [{
         model: NotesCategoryModel,
-        where: { id: catId }
+        where: { id: catId },
+        // used to remove the attributes of the join table otherwise
+        // they are eagerly loaded in the NotesCategory object
+        through: { attributes: [] }
       }]
     })
     .then(notes => reply(notes))
